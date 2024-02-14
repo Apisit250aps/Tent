@@ -186,7 +186,7 @@ class Sale(models.Model):
 
 
 class SaleReceipt(models.Model):
-    receipt_id = models.AutoField(primary_key=True)
+    receipt_no = models.CharField(max_length=12, unique=True)
     sale = models.ForeignKey(Sale, on_delete=models.CASCADE)
     issue_date = models.DateField()
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
