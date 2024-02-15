@@ -91,7 +91,8 @@ class Car(models.Model):
     model = models.CharField(max_length=255, null=True)
     year = models.CharField(max_length=4, null=True)
     color = models.CharField(max_length=255, null=True)
-    mileage = models.IntegerField()
+    mileage = models.IntegerField(default=0)
+    
     price = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.TextField(default="-")
     status = models.IntegerField(choices=CAR_STATUS, default=1)
@@ -105,13 +106,15 @@ class Car(models.Model):
 
 
 class Reservation(models.Model):
-    reservation_code = models.CharField(max_length=6, unique=True)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     car = models.ForeignKey(Car, on_delete=models.CASCADE)
+
+    reservation_code = models.CharField(max_length=6, unique=True)
     reservation_date = models.DateTimeField()
     pickup_date = models.DateTimeField()
     deposit = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.IntegerField(choices=RESERVATION_STATUS, default=1)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -126,11 +129,37 @@ class ReservationReceipt(models.Model):
     payment_amount = models.DecimalField(max_digits=10, decimal_places=2)
     payment_method = models.IntegerField(choices=PAYMENT_METHOD)
     remark = models.CharField(max_length=255, default="-", blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class Sale(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    car = models.ForeignKey(Car, on_delete=models.CASCADE)
+    sale_price = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_method = models.IntegerField(choices=PAYMENT_METHOD)
+    sale_status = models.IntegerField(choices=SALE_STATUS)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class SaleReceipt(models.Model):
+    receipt_no = models.CharField(max_length=12, unique=True)
+    sale = models.ForeignKey(Sale, on_delete=models.CASCADE)
+    issue_date = models.DateField()
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_method = models.IntegerField(choices=PAYMENT_METHOD)
+    remark = models.CharField(max_length=255, default="-", blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
 
 class Finance(models.Model):
+    sale = models.ForeignKey(Sale, on_delete=models.CASCADE)
     finance_code = models.CharField(max_length=12, unique=True)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     loan_amount = models.DecimalField(max_digits=10, decimal_places=2)
@@ -169,29 +198,3 @@ class PeriodReceipt(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-
-class Sale(models.Model):
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    car = models.ForeignKey(Car, on_delete=models.CASCADE)
-    sale_price = models.DecimalField(max_digits=10, decimal_places=2)
-    payment_method = models.IntegerField(choices=PAYMENT_METHOD)
-    sale_status = models.IntegerField(choices=(
-
-    ))
-    finance = models.ForeignKey(Finance, on_delete=models.CASCADE, null=True)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-
-class SaleReceipt(models.Model):
-    receipt_no = models.CharField(max_length=12, unique=True)
-    sale = models.ForeignKey(Sale, on_delete=models.CASCADE)
-    issue_date = models.DateField()
-    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    payment_method = models.IntegerField(choices=PAYMENT_METHOD)
-    remark = models.CharField(max_length=255, default="-", blank=True)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
