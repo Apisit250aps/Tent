@@ -41,9 +41,9 @@ INSTALLED_APPS = [
 
     'rest_framework',
 
+
     'tent',
-
-
+    'website',
 
 ]
 
