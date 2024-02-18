@@ -18,9 +18,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 
-
 @csrf_exempt
-@api_view(["POST", ])
+@api_view(["POST"])
 @permission_classes((AllowAny,))
 def register(request):
     http_status = HTTP_200_OK
@@ -28,8 +27,9 @@ def register(request):
     username = request.data['username']
     password = request.data['password']
     email = request.data['email']
-
+    print(User.objects.filter(username=username).count())
     if User.objects.filter(username=username).count() > 0:
+        
         message = "username is exist!"
         http_status = HTTP_400_BAD_REQUEST
 
@@ -42,6 +42,7 @@ def register(request):
             password=password,
             email=email
         )
+  
         if user:
             http_status = HTTP_201_CREATED
         else:
@@ -64,6 +65,7 @@ def login(request):
         username=username,
         password=password
     )
+
     if user is not None:
         if user.is_active:
             http_status = HTTP_202_ACCEPTED
@@ -74,4 +76,3 @@ def login(request):
         http_status = HTTP_400_BAD_REQUEST
 
     return Response(status=http_status)
-
